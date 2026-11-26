@@ -54,7 +54,7 @@
   .skip:focus { top: 16px; }
 
   /* ---------- Header ---------- */
-  .site-header { position: fixed; inset: 0 0 auto; z-index: 20; transition: background-color 300ms, border-color 300ms; border-bottom: 1px solid transparent; }
+  .site-header { position: fixed; inset: env(safe-area-inset-top, 0px) 0 auto; z-index: 20; transition: background-color 300ms, border-color 300ms; border-bottom: 1px solid transparent; }
   .site-header.scrolled { background: rgba(11, 11, 16, .78); backdrop-filter: blur(14px); border-color: var(--color-border); }
   .site-header .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 24px; }
   .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font: 600 1.35rem var(--font-display); letter-spacing: .04em; white-space: nowrap; }
@@ -256,19 +256,19 @@
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
 
   /* ---------- Reveal motion ---------- */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 900ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: var(--d, 0ms); }
-  .reveal.in { opacity: 1; transform: none; }
-  .no-js .reveal { opacity: 1; transform: none; }
+  /* Content is visible at rest; it only animates when scrolled into view. */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--color-background); }
+  .reveal.in { animation: rise 900ms var(--ease-out) var(--d, 0ms) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
-    .reveal { opacity: 1; transform: none; }
     .btn-gold:hover, .tile:hover { transform: none; }
   }
 </style>
 </head>
-<body class="no-js">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="site-header" id="top">
@@ -539,7 +539,6 @@
 
 <script>
 (() => {
-  document.body.classList.remove('no-js');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Header background on scroll */
